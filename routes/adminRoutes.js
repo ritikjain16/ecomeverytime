@@ -2,10 +2,10 @@ import express from "express";
 import UserList from "../schemas/UserSchema.js";
 import OrderList from "../schemas/OrderSchema.js";
 import { sendMailToUser } from "./sendMail.js";
-
+import { mymiddleware } from "../middleware/authmiddleware.js";
 const router = express.Router();
 
-router.post("/status/packedDate", async (req, res) => {
+router.post("/status/packedDate", mymiddleware, async (req, res) => {
   const { uid, oid, packedDate } = req.body;
   try {
     const changeUserOrderpackedDate = await UserList.updateOne(
@@ -50,7 +50,7 @@ router.post("/status/packedDate", async (req, res) => {
   }
 });
 
-router.post("/status/shippedDate", async (req, res) => {
+router.post("/status/shippedDate", mymiddleware, async (req, res) => {
   const { uid, oid, shippedDate } = req.body;
   try {
     const changeUserOrdershippedDate = await UserList.updateOne(
@@ -95,7 +95,7 @@ router.post("/status/shippedDate", async (req, res) => {
   }
 });
 
-router.post("/status/deliveredDate", async (req, res) => {
+router.post("/status/deliveredDate", mymiddleware, async (req, res) => {
   const { uid, oid, deliveredDate } = req.body;
   try {
     const changeUserOrderdeliveredDate = await UserList.updateOne(
@@ -140,7 +140,7 @@ router.post("/status/deliveredDate", async (req, res) => {
   }
 });
 
-router.post("/status/returnDate", async (req, res) => {
+router.post("/status/returnDate", mymiddleware, async (req, res) => {
   const { uid, oid, returnDate } = req.body;
   try {
     const changeUserOrderreturnDate = await UserList.updateOne(
@@ -185,7 +185,7 @@ router.post("/status/returnDate", async (req, res) => {
   }
 });
 
-router.post("/status/cancelledDate", async (req, res) => {
+router.post("/status/cancelledDate", mymiddleware, async (req, res) => {
   const { uid, oid, cancelledDate } = req.body;
   try {
     const changeUserOrdercancelledDate = await UserList.updateOne(

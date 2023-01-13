@@ -6,6 +6,7 @@ import ProductList from "../schemas/ProductSchema.js";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { mymiddleware } from "../middleware/authmiddleware.js";
 dotenv.config();
 const router = express.Router();
 
@@ -17,7 +18,7 @@ var instance = new Razorpay({
   key_secret: keysecret,
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/signin", mymiddleware, async (req, res) => {
   const { uid } = req.body;
   try {
     const finduser = await UserList.findOne({ uid });
@@ -48,7 +49,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.post("/get", async (req, res) => {
+router.post("/get", mymiddleware, async (req, res) => {
   const { uid } = req.body;
   try {
     const finduser = await UserList.findOne({ uid });
@@ -59,7 +60,7 @@ router.post("/get", async (req, res) => {
   }
 });
 
-router.post("/cart/add", async (req, res) => {
+router.post("/cart/add", mymiddleware, async (req, res) => {
   const { uid, cid, pid } = req.body;
   try {
     const user = await UserList.findOne({ uid });
@@ -88,7 +89,7 @@ router.post("/cart/add", async (req, res) => {
   }
 });
 
-router.post("/cart/delete", async (req, res) => {
+router.post("/cart/delete", mymiddleware, async (req, res) => {
   const { uid, cid, pid } = req.body;
   try {
     const user = await UserList.findOne({ uid });
@@ -113,7 +114,7 @@ router.post("/cart/delete", async (req, res) => {
   }
 });
 
-router.post("/address/add", async (req, res) => {
+router.post("/address/add", mymiddleware, async (req, res) => {
   const { uid, address, aid } = req.body;
   try {
     const addaddress = await UserList.updateOne(
@@ -127,7 +128,7 @@ router.post("/address/add", async (req, res) => {
   }
 });
 
-router.post("/address/update", async (req, res) => {
+router.post("/address/update", mymiddleware, async (req, res) => {
   const { uid, address, aid } = req.body;
   try {
     const updateaddress = await UserList.updateOne(
@@ -152,7 +153,7 @@ router.post("/address/update", async (req, res) => {
   }
 });
 
-router.post("/address/delete", async (req, res) => {
+router.post("/address/delete", mymiddleware, async (req, res) => {
   const { uid, aid } = req.body;
   try {
     const deleteaddress = await UserList.updateOne(
@@ -166,7 +167,7 @@ router.post("/address/delete", async (req, res) => {
   }
 });
 
-router.post("/placeorder", async (req, res) => {
+router.post("/placeorder", mymiddleware, async (req, res) => {
   const { uid } = req.body;
   try {
     const addinmyorders = await OrderList.create({ order: req.body });
@@ -199,7 +200,7 @@ router.post("/placeorder", async (req, res) => {
   }
 });
 
-router.post("/review/add", async (req, res) => {
+router.post("/review/add", mymiddleware, async (req, res) => {
   const { pid, cid, oid, reviewData, uid } = req.body;
   try {
     await ProductList.updateOne(
@@ -238,7 +239,7 @@ router.post("/review/add", async (req, res) => {
 
 // ----------Online Payment----------------
 
-router.post("/create/order", async (req, res) => {
+router.post("/create/order", mymiddleware, async (req, res) => {
   const { amt } = req.body;
   var oid = "OD_" + Math.floor(Math.random() * 99999999);
   var options = {
@@ -251,9 +252,9 @@ router.post("/create/order", async (req, res) => {
   });
 });
 
-router.post("/placeorder/online", async (req, res) => {
+router.post("/placeorder/online", mymiddleware, async (req, res) => {
   const { uid } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body.details;
   try {

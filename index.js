@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
+import { mymiddleware } from "./middleware/authmiddleware.js";
 dotenv.config();
 
 const app = express();
@@ -27,7 +28,7 @@ app.use("/auth", userRouter);
 app.use("/product", productRouter);
 app.use("/admin", adminRouter);
 
-app.post("/getkey", (req, res) => {
+app.post("/getkey", mymiddleware, (req, res) => {
   res.status(200).send(process.env.KEY_ID);
 });
 

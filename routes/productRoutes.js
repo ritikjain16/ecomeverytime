@@ -1,8 +1,9 @@
 import express from "express";
 import ProductList from "../schemas/ProductSchema.js";
+import { mymiddleware } from "../middleware/authmiddleware.js";
 const router = express.Router();
 
-router.post("/add", async (req, res) => {
+router.post("/add", mymiddleware, async (req, res) => {
   try {
     await ProductList.create(req.body);
     res.status(200).send({ msg: "Product Added" });
@@ -12,7 +13,7 @@ router.post("/add", async (req, res) => {
   }
 });
 
-router.post("/get", async (req, res) => {
+router.post("/get", mymiddleware, async (req, res) => {
   try {
     const getProducts = await ProductList.find();
     res.status(200).send(getProducts);
