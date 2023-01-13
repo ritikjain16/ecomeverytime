@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRouter from "./routes/userRoutes.js";
 import productRouter from "./routes/productRoutes.js";
-import paymentRouter from "./routes/payment/paymentRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 dotenv.config();
 
@@ -26,7 +25,6 @@ mongoose
 
 app.use("/auth", userRouter);
 app.use("/product", productRouter);
-app.use("/api", paymentRouter);
 app.use("/admin", adminRouter);
 
 app.post("/getkey", (req, res) => {
