@@ -254,7 +254,7 @@ router.post("/create/order", mymiddleware, async (req, res) => {
 
 router.post("/placeorder/online", mymiddleware, async (req, res) => {
   const { uid } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body.details;
   try {
@@ -284,6 +284,77 @@ router.post("/placeorder/online", mymiddleware, async (req, res) => {
             `<div>Hi ${req.body.email},</div><p>Order with order id <b>${req.body.oid}</b> has been successfully placed. Thanks for using Razorpay.</p>`
           );
           res.status(200).send({ msg: "Order Placed" });
+        } catch (e) {
+          console.log(e);
+          res.status(400).send(e);
+        }
+
+        // res.status(200).send({ msg: "Payment Success" });
+      } catch (e) {
+        console.log(e);
+        res.status(400).send(e);
+      }
+    } else {
+      res.status(200).send({ msg: "Payment Failed" });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+});
+
+router.post("/updateorder/online", mymiddleware, async (req, res) => {
+  const {
+    uid,
+    oid,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    payment_method,
+  } = req.body;
+
+  try {
+    const hash = crypto
+      .createHmac("sha256", keysecret)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+    if (hash === razorpay_signature) {
+      try {
+        const addinmyorders = await OrderList.updateOne(
+          {
+            "order.uid": uid,
+            "order.oid": oid,
+          },
+          {
+            $set: {
+              "order.$.details.payment_method": payment_method,
+              "order.$.details.razorpay_order_id": razorpay_order_id,
+              "order.$.details.razorpay_payment_id": razorpay_payment_id,
+              "order.$.details.razorpay_signature": razorpay_signature,
+            },
+          }
+        );
+        try {
+          const addorder = await UserList.updateOne(
+            { uid, "orders.oid": oid },
+            {
+              $set: {
+                "orders.$.singleorder.details.payment_method": payment_method,
+                "orders.$.singleorder.details.razorpay_order_id":
+                  razorpay_order_id,
+                "orders.$.singleorder.details.razorpay_payment_id":
+                  razorpay_payment_id,
+                "orders.$.singleorder.details.razorpay_signature":
+                  razorpay_signature,
+              },
+            }
+          );
+          sendMailToUser(
+            req.body.email,
+            "Order Updated to Online Payment",
+            `<div>Hi ${req.body.email},</div><p>Order with order id <b>${req.body.oid}</b> has been successfully updated to online. Thanks for using Razorpay.</p>`
+          );
+          res.status(200).send({ msg: "Order Updated to Prepaid" });
         } catch (e) {
           console.log(e);
           res.status(400).send(e);
